@@ -37,7 +37,6 @@
 
 <div class="app">
 	<header>
-		<a class="brand" href="/">learn</a>
 		{#if data.lessons.length > 0}
 			<select value={data.id} onchange={(e) => goto(href(e.currentTarget.value))} aria-label="Lesson">
 				{#each data.lessons as l (l.id)}
@@ -50,7 +49,9 @@
 	<main>
 		{#if lesson && data.id}
 			{@const id = data.id}
-			<LessonView {lesson} section={data.section} hrefFor={(n) => href(id, n)} />
+			{#key `${id}:${data.section}`}
+				<LessonView lessonId={id} {lesson} section={data.section} hrefFor={(n) => href(id, n)} />
+			{/key}
 		{:else if data.current}
 			<div class="message error" role="alert">
 				<strong>This lesson failed to load.</strong>
@@ -74,17 +75,11 @@
 	header {
 		display: flex;
 		align-items: center;
+		justify-content: flex-end;
 		gap: 20px;
-		padding: 12px 24px;
+		min-height: 54px;
+		padding: 10px 24px;
 		border-bottom: 1px solid #262626;
-	}
-
-	.brand {
-		font-weight: 600;
-		font-size: 15px;
-		letter-spacing: -0.01em;
-		color: #f2f0eb;
-		text-decoration: none;
 	}
 
 	select {

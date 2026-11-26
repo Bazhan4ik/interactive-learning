@@ -4,8 +4,8 @@
  * A generated lesson must pass these before it is shown to a learner.
  */
 import { describe, expect, it } from 'vitest';
-import { isLesson } from '#lesson';
-import { renderMarkdown } from '#lib/lesson/markdown.ts';
+import { isLesson, lessonQuestions } from '#lesson';
+import { findMathErrors, renderMarkdown } from '#lib/lesson/markdown.ts';
 
 const manifests = import.meta.glob<{ default: unknown }>('./*/lesson.ts', { eager: true });
 const texts = import.meta.glob<string>('./*/*.md', { eager: true, query: '?raw', import: 'default' });
@@ -28,7 +28,19 @@ describe('lessons', () => {
 			const lesson = mod.default;
 
 			it('renders every section text', () => {
-				for (const s of lesson.sections) expect(renderMarkdown(s.text).length, s.title).toBeGreaterThan(0);
+				for (const s of lesson.sections) if (s.text) expect(renderMarkdown(s.text).length, s.title).toBeGreaterThan(0);
+			});
+
+			it('has valid LaTeX in all text, prompts, options and explanations', () => {
+				const strings = [
+					...lesson.sections.map((s) => [`section "${s.title}"`, s.text] as const),
+					...lessonQuestions(lesson).flatMap(({ question: q }) => [
+						[`${q.id} prompt`, q.prompt] as const,
+						[`${q.id} explanation`, q.explanation ?? ''] as const,
+						...(q.type === 'choice' ? q.options.map((o, i) => [`${q.id} option ${i}`, o] as const) : [])
+					])
+				];
+				for (const [where, text] of strings) expect(findMathErrors(text), where).toEqual([]);
 			});
 
 			it('uses every .md file in its folder (nothing forgotten)', () => {
@@ -39,7 +51,10 @@ describe('lessons', () => {
 			});
 
 			it('uses every .scene.ts file in its folder (nothing forgotten)', () => {
-				const used = new Set(lesson.sections.map((s) => s.scene));
+				const used = new Set([
+					...lesson.sections.map((s) => s.scene),
+					...lessonQuestions(lesson).map(({ question }) => question.scene)
+				]);
 				for (const [sceneFile, sceneMod] of Object.entries(scenes)) {
 					if (folderOf(sceneFile) === folder) {
 						expect(used.has(sceneMod.default as never), `${sceneFile} is not used by any section`).toBe(true);

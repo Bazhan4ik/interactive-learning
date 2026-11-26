@@ -35,9 +35,11 @@
 		interactive?: boolean;
 		/** Rendered below the scene with the current snapshot (e.g. inspectors, export buttons). */
 		children?: Snippet<[SceneSnapshot]>;
+		/** Called whenever the learner changes the state (dragging, reset). */
+		onstatechange?: (state: SceneState) => void;
 	}
 
-	let { scene, label = 'Interactive diagram', controls = true, interactive = true, children }: Props = $props();
+	let { scene, label = 'Interactive diagram', controls = true, interactive = true, children, onstatechange }: Props = $props();
 
 	// The view is bound to the scene it was created with (see header comment).
 	const boundScene = untrack(() => scene);
@@ -60,12 +62,17 @@
 		return () => player.destroy();
 	});
 
+	function setState(next: SceneState) {
+		sceneState = next;
+		onstatechange?.(next);
+	}
+
 	function onmove(h: HandlePrimitive, local: Vec2) {
-		sceneState = moveHandle(sceneState, h, local);
+		setState(moveHandle(sceneState, h, local));
 	}
 
 	function reset() {
-		sceneState = cloneInitial();
+		setState(cloneInitial());
 		player.pause();
 		player.seek(0);
 		if (boundScene.autoplay) player.play();

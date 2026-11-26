@@ -1,14 +1,25 @@
 <!--
-	One section of a lesson: explanation on the left, the section's scene on the
-	right. Navigation is plain links (`hrefFor`), so the URL is the source of
-	truth and browser back/forward walk through sections.
+	One section of a lesson: explanation and quiz on the left, a diagram on the
+	right. The diagram is the current question's scene if it has one, otherwise
+	the section's scene.
+
+	Navigation between sections is plain links (`hrefFor`), so the URL is the
+	source of truth. Mount one LessonView per section ({#key}) so per-section
+	state (current question, diagram state) starts fresh.
 -->
 <script lang="ts">
+	import type { AnyScene, SceneState } from '#engine';
 	import { SceneView } from '#engine/svelte';
 	import type { Lesson, Section } from './lesson';
 	import { renderMarkdown } from './markdown';
+	import './prose.css';
+	import Quiz from './quiz/Quiz.svelte';
+	import { buildQuizReport } from './quiz/report';
+	import { getQuizResults } from './quiz/results.svelte';
 
 	interface Props {
+		/** Lesson id (folder name), used to key quiz results. */
+		lessonId: string;
 		lesson: Lesson;
 		/** 1-based section number. */
 		section: number;
@@ -16,44 +27,44 @@
 		hrefFor: (section: number) => string;
 	}
 
-	let { lesson, section: number, hrefFor }: Props = $props();
+	let { lessonId, lesson, section: number, hrefFor }: Props = $props();
+
+	const results = getQuizResults();
 
 	const section: Section = $derived(lesson.sections[number - 1]);
 	const prev: Section | undefined = $derived(lesson.sections[number - 2]);
 	const next: Section | undefined = $derived(lesson.sections[number]);
-	const html = $derived(renderMarkdown(section.text));
+
+	let questionIndex = $state(0);
+	const shownScene = $derived(section.quiz[questionIndex]?.scene ?? section.scene);
+
+	// Latest state of the diagram, remembered per scene so switching questions
+	// never hands one scene's state to another scene's question.
+	let live = $state.raw<{ scene: AnyScene; state: SceneState } | null>(null);
+	const liveState = $derived(live && live.scene === shownScene ? live.state : null);
+
+	const score = $derived(next ? null : buildQuizReport(lesson, results.forLesson(lessonId)).summary);
 </script>
 
 <div class="lesson">
 	<article class="text">
-		{#key section}
-			<div class="scroll">
-				<header>
-					<p class="topic">{lesson.title}</p>
-					<ol class="progress" aria-label="Sections">
-						{#each lesson.sections as s (s.number)}
-							<li>
-								<a
-									href={hrefFor(s.number)}
-									class={{ done: s.number < number, current: s.number === number }}
-									aria-current={s.number === number ? 'step' : undefined}
-									title={s.title}
-								>
-									<span class="visually-hidden">{s.number}. {s.title}</span>
-								</a>
-							</li>
-						{/each}
-					</ol>
-					<p class="count">Section {number} of {lesson.sections.length}</p>
-					<h1>{section.title}</h1>
-				</header>
+		<div class="scroll">
+			<header>
+				<p class="count">Section {number} of {lesson.sections.length}</p>
+				<h1>{section.title}</h1>
+			</header>
 
-				<div class="prose">
+			{#if section.text}
+				<div class="prose body">
 					<!-- renderMarkdown escapes raw HTML and unsafe links (see markdown.ts) -->
-					{@html html}
+					{@html renderMarkdown(section.text)}
 				</div>
-			</div>
-		{/key}
+			{/if}
+
+			{#if section.quiz.length > 0}
+				<Quiz {lessonId} questions={section.quiz} bind:index={questionIndex} sceneState={liveState} />
+			{/if}
+		</div>
 
 		<nav class="pager" aria-label="Section navigation">
 			{#if prev}
@@ -72,16 +83,19 @@
 			{:else}
 				<span class="next end">
 					<span class="dir">End of lesson</span>
+					{#if score && score.questions > 0}
+						<span class="name">Quiz: {score.correct} of {score.questions} correct</span>
+					{/if}
 				</span>
 			{/if}
 		</nav>
 	</article>
 
 	<section class="stage" aria-label="Diagram">
-		{#if section.scene}
-			{#key section.scene}
+		{#if shownScene}
+			{#key shownScene}
 				<div class="scene">
-					<SceneView scene={section.scene} label={section.title} />
+					<SceneView scene={shownScene} label={section.title} onstatechange={(state) => (live = { scene: shownScene!, state })} />
 				</div>
 			{/key}
 		{/if}
@@ -108,56 +122,15 @@
 	.scroll {
 		flex: 1;
 		overflow-y: auto;
-		padding: 40px 44px 32px;
+		padding: 40px 44px 40px;
+	}
+
+	.scroll > :global(*) {
+		max-width: 40rem;
 	}
 
 	header {
-		margin-bottom: 28px;
-	}
-
-	.topic {
-		margin: 0 0 14px;
-		font-size: 13px;
-		letter-spacing: 0.02em;
-		color: #8b909a;
-	}
-
-	.progress {
-		display: flex;
-		gap: 4px;
-		margin: 0 0 22px;
-		padding: 0;
-		list-style: none;
-	}
-
-	.progress li {
-		flex: 1;
-	}
-
-	.progress a {
-		display: block;
-		padding: 6px 0;
-	}
-
-	.progress a::before {
-		content: '';
-		display: block;
-		height: 3px;
-		border-radius: 2px;
-		background: #333;
-		transition: background 150ms ease;
-	}
-
-	.progress a.done::before {
-		background: #5c5c5c;
-	}
-
-	.progress a.current::before {
-		background: #e6e4df;
-	}
-
-	.progress a:hover::before {
-		background: #8b909a;
+		margin-bottom: 26px;
 	}
 
 	.count {
@@ -174,61 +147,6 @@
 		font-weight: 600;
 		letter-spacing: -0.01em;
 		color: #f2f0eb;
-	}
-
-	/* ---- markdown ---- */
-
-	.prose {
-		max-width: 40rem;
-		font-size: 16.5px;
-		line-height: 1.7;
-		color: #cfccc6;
-	}
-
-	.prose :global(p) {
-		margin: 0 0 1em;
-	}
-
-	.prose :global(h2),
-	.prose :global(h3) {
-		margin: 1.8em 0 0.5em;
-		font-size: 17px;
-		font-weight: 600;
-		color: #f2f0eb;
-	}
-
-	.prose :global(strong) {
-		font-weight: 600;
-		color: #f2f0eb;
-	}
-
-	.prose :global(ul),
-	.prose :global(ol) {
-		margin: 0 0 1em;
-		padding-left: 1.3em;
-	}
-
-	.prose :global(li) {
-		margin: 0.25em 0;
-	}
-
-	.prose :global(code) {
-		font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-		font-size: 0.9em;
-		padding: 0.1em 0.35em;
-		border-radius: 4px;
-		background: #242424;
-	}
-
-	.prose :global(blockquote) {
-		margin: 0 0 1em;
-		padding-left: 1em;
-		border-left: 2px solid #333;
-		color: #a9a7a2;
-	}
-
-	.prose :global(a) {
-		color: #8fb8f7;
 	}
 
 	/* ---- pager ---- */
@@ -297,15 +215,6 @@
 	.scene {
 		width: 100%;
 		max-width: 1100px;
-	}
-
-	.visually-hidden {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 
 	@media (max-width: 900px) {

@@ -1,0 +1,85 @@
+/* Rendered lesson markdown (section text, quiz prompts, explanations). */
+@import 'katex/dist/katex.min.css';
+
+.prose {
+	font-size: 16.5px;
+	line-height: 1.7;
+	color: #cfccc6;
+}
+
+.prose > :first-child {
+	margin-top: 0;
+}
+
+.prose > :last-child {
+	margin-bottom: 0;
+}
+
+.prose p {
+	margin: 0 0 1em;
+}
+
+.prose h2,
+.prose h3 {
+	margin: 1.8em 0 0.5em;
+	font-size: 17px;
+	font-weight: 600;
+	color: #f2f0eb;
+}
+
+.prose strong {
+	font-weight: 600;
+	color: #f2f0eb;
+}
+
+.prose ul,
+.prose ol {
+	margin: 0 0 1em;
+	padding-left: 1.3em;
+}
+
+.prose li {
+	margin: 0.25em 0;
+}
+
+.prose code {
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 0.9em;
+	padding: 0.1em 0.35em;
+	border-radius: 4px;
+	background: #242424;
+}
+
+.prose blockquote {
+	margin: 0 0 1em;
+	padding-left: 1em;
+	border-left: 2px solid #333;
+	color: #a9a7a2;
+}
+
+.prose a {
+	color: #8fb8f7;
+}
+
+/* math */
+
+.prose .katex {
+	font-size: 1.08em;
+	color: #f2f0eb;
+	/* keep short inline formulas like "a − b" on one line; use $$…$$ for long ones */
+	white-space: nowrap;
+}
+
+.prose .math-nowrap {
+	white-space: nowrap;
+}
+
+.prose .math-display {
+	margin: 0.4em 0 1.1em;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.prose .math-display .katex-display {
+	margin: 0;
+}

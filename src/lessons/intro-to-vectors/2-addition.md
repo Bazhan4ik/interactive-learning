@@ -1,21 +1,25 @@
-To add two vectors, place them **tip to tail**: start **b** where **a** ends. The sum **a + b** is the arrow from the start of **a** to the end of **b**. It's the single step that gets you where the two steps together would.
+To add two vectors, place them **tip to tail**: start $\mathbf{b}$ where $\mathbf{a}$ ends. The sum $\mathbf{a} + \mathbf{b}$ is the arrow from the start of $\mathbf{a}$ to the end of $\mathbf{b}$. It's the single step that gets you where the two steps together would.
 
 In components, add the matching parts:
 
-(3, 1) + (1, 2) = (4, 3)
+$$
+(a_x, a_y) + (b_x, b_y) = (a_x + b_x,\; a_y + b_y)
+$$
 
-Drag the tips of **a** and **b** in the diagram and watch the sum follow. Try to convince yourself that **a + b = b + a**: the order of the steps doesn't change where you end up.
+For example, $(3, 1) + (1, 2) = (4, 3)$.
+
+Drag the tips of $\mathbf{a}$ and $\mathbf{b}$ in the diagram and watch the sum follow. Try to convince yourself that $\mathbf{a} + \mathbf{b} = \mathbf{b} + \mathbf{a}$: the order of the steps doesn't change where you end up.
 
 ### Subtraction
 
 Subtracting means adding the opposite:
 
-**a − b** = **a** + (−**b**)
+$$
+\mathbf{a} - \mathbf{b} = \mathbf{a} + (-\mathbf{b})
+$$
 
-where −**b** has the same length as **b** but points the other way. In components:
+where $-\mathbf{b}$ has the same length as $\mathbf{b}$ but points the other way. In components, $(3, 1) - (1, 2) = (2, -1)$.
 
-(3, 1) − (1, 2) = (2, −1)
+In the diagram, $-\mathbf{b}$ is drawn dashed from the tip of $\mathbf{a}$, and $\mathbf{a} - \mathbf{b}$ runs from the origin to its end.
 
-In the diagram, −**b** is drawn dashed from the tip of **a**, and **a − b** runs from the origin to its end.
-
-Here's a handy fact: if **a** and **b** start at the same point, **a − b** is the arrow from the tip of **b** to the tip of **a**. It answers the question "how do I get from **b** to **a**?"
+Here's a handy fact: if $\mathbf{a}$ and $\mathbf{b}$ start at the same point, $\mathbf{a} - \mathbf{b}$ is the arrow from the tip of $\mathbf{b}$ to the tip of $\mathbf{a}$. It answers the question "how do I get from $\mathbf{b}$ to $\mathbf{a}$?"
