@@ -6,7 +6,6 @@ import { renderSvg } from './svg-string';
 describe('renderSvg', () => {
 	const frame = evaluateScene(
 		defineScene({
-			title: 'svg',
 			state: { p: [0, 0] },
 			draw: () => [
 				circle({ id: 'c', radius: 1, color: '#123456', dash: [4, 2] }),

@@ -20,7 +20,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { untrack } from 'svelte';
-	import { evaluateScene, type Scene } from '../../core/scene';
+	import { evaluateScene, type AnyScene } from '../../core/scene';
 	import type { HandlePrimitive } from '../../core/primitives';
 	import type { Vec2 } from '../../math/vec';
 	import { moveHandle } from '../../interaction/drag';
@@ -28,14 +28,16 @@
 	import { Player } from './player.svelte';
 
 	interface Props {
-		scene: Scene<SceneState>;
+		scene: AnyScene;
+		/** Accessible description of the diagram. */
+		label?: string;
 		controls?: boolean;
 		interactive?: boolean;
 		/** Rendered below the scene with the current snapshot (e.g. inspectors, export buttons). */
 		children?: Snippet<[SceneSnapshot]>;
 	}
 
-	let { scene, controls = true, interactive = true, children }: Props = $props();
+	let { scene, label = 'Interactive diagram', controls = true, interactive = true, children }: Props = $props();
 
 	// The view is bound to the scene it was created with (see header comment).
 	const boundScene = untrack(() => scene);
@@ -76,7 +78,7 @@
 
 <figure class="scene-view">
 	{#if result.frame}
-		<FrameSvg frame={result.frame} label={boundScene.title} {interactive} {onmove} />
+		<FrameSvg frame={result.frame} {label} {interactive} {onmove} />
 	{:else}
 		<div class="error" style:aspect-ratio={aspect} role="alert">
 			<strong>Scene error</strong>

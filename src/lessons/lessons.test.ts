@@ -1,46 +1,50 @@
 /**
- * Smoke tests for every scene under src/lessons/. This is also the
- * validation step for LLM-generated lessons: a generated file must pass these
- * before it is shown to a learner.
+ * Checks every lesson folder in src/lessons/. Scenes themselves are smoke
+ * tested in src/scenes.test.ts; this checks the lesson structure around them.
+ * A generated lesson must pass these before it is shown to a learner.
  */
 import { describe, expect, it } from 'vitest';
-import { evaluateScene, renderSvg, type Scene } from '#engine';
+import { isLesson } from '#lesson';
+import { renderMarkdown } from '#lib/lesson/markdown.ts';
 
-const modules = import.meta.glob<{ default: unknown }>(['./**/*.ts', '!./**/*.test.ts'], { eager: true });
-
-const isScene = (x: unknown): x is Scene => typeof x === 'object' && x !== null && 'definition' in x && 'viewport' in x;
+const manifests = import.meta.glob<{ default: unknown }>('./*/lesson.ts', { eager: true });
+const texts = import.meta.glob<string>('./*/*.md', { eager: true, query: '?raw', import: 'default' });
+const scenes = import.meta.glob<{ default: unknown }>('./*/*.scene.ts', { eager: true });
+const folderOf = (file: string) => file.split('/')[1];
 
 describe('lessons', () => {
-	it('found scene files', () => {
-		expect(Object.keys(modules).length).toBeGreaterThan(0);
+	it('found lessons', () => {
+		expect(Object.keys(manifests).length).toBeGreaterThan(0);
 	});
 
-	for (const [file, mod] of Object.entries(modules)) {
-		describe(file, () => {
-			it('default-exports a scene', () => {
-				expect(isScene(mod.default)).toBe(true);
-			});
-			if (!isScene(mod.default)) return;
-			const scene = mod.default;
-			const times = scene.duration > 0 ? [0, scene.duration * 0.25, scene.duration * 0.5, scene.duration * 0.75, scene.duration] : [0];
+	for (const [file, mod] of Object.entries(manifests)) {
+		const folder = folderOf(file);
 
-			it('renders at every sampled time', () => {
-				for (const t of times) {
-					const svg = renderSvg(evaluateScene(scene, { t }));
-					expect(svg, `t=${t}`).not.toMatch(/NaN|undefined|Infinity/);
+		describe(folder, () => {
+			it('lesson.ts default-exports defineLesson(...)', () => {
+				expect(isLesson(mod.default)).toBe(true);
+			});
+			if (!isLesson(mod.default)) return;
+			const lesson = mod.default;
+
+			it('renders every section text', () => {
+				for (const s of lesson.sections) expect(renderMarkdown(s.text).length, s.title).toBeGreaterThan(0);
+			});
+
+			it('uses every .md file in its folder (nothing forgotten)', () => {
+				const used = new Set(lesson.sections.map((s) => s.text));
+				for (const [md, text] of Object.entries(texts)) {
+					if (folderOf(md) === folder) expect(used.has(text), `${md} is not used by any section`).toBe(true);
 				}
 			});
 
-			it('binds handles only to keys declared in state', () => {
-				for (const t of times) {
-					for (const h of evaluateScene(scene, { t }).handles) {
-						expect(Object.keys(scene.initialState), `handle "${h.bind}" at t=${t}`).toContain(h.bind);
+			it('uses every .scene.ts file in its folder (nothing forgotten)', () => {
+				const used = new Set(lesson.sections.map((s) => s.scene));
+				for (const [sceneFile, sceneMod] of Object.entries(scenes)) {
+					if (folderOf(sceneFile) === folder) {
+						expect(used.has(sceneMod.default as never), `${sceneFile} is not used by any section`).toBe(true);
 					}
 				}
-			});
-
-			it('has JSON-serialisable state (so it can be saved and restored)', () => {
-				expect(JSON.parse(JSON.stringify(scene.initialState))).toEqual(scene.initialState);
 			});
 		});
 	}

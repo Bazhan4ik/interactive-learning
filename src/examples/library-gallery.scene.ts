@@ -1,4 +1,8 @@
 /**
+ * Library gallery
+ *
+ * Every object in the library, rendered from its `meta.example`.
+ *
  * Renders every library object's `example`, scaled into a grid cell. New
  * library objects show up here automatically — useful when building one.
  * Handles are stripped: this is a visual check, examples have no state.
@@ -22,8 +26,6 @@ function fitted(example: Node, center: [number, number]): Node {
 const withoutHandles = (node: Node): Node => mapTree(node, (n) => (n.kind === 'handle' ? null : n)) ?? group([]);
 
 export default defineScene({
-	title: 'Library gallery',
-	description: 'Every object in the library, rendered from its `meta.example`.',
 	size: [800, 450 * Math.ceil(catalog.length / COLS) / 2],
 	view: { x: [-8, 8], y: [-(CELL_H * Math.ceil(catalog.length / COLS)) / 2, (CELL_H * Math.ceil(catalog.length / COLS)) / 2] },
 	draw: ({ view }) =>

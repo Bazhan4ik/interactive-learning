@@ -8,7 +8,7 @@
 
 // Scenes
 export { defineScene, evaluateScene, SceneError } from './core/scene';
-export type { DrawContext, Frame, Scene, SceneDefinition, SceneState, ScenePhase } from './core/scene';
+export type { AnyScene, DrawContext, Frame, Scene, SceneDefinition, SceneState, ScenePhase } from './core/scene';
 export type { ViewSpec, Viewport, Range } from './core/viewport';
 export type { Primitive, PathPrimitive, TextPrimitive, HandlePrimitive } from './core/primitives';
 

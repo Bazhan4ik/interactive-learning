@@ -5,10 +5,10 @@
  */
 
 export const colors = {
-	background: '#0f1115',
+	background: '#191919',
 	foreground: '#e6e4df',
 	muted: '#8b909a',
-	faint: '#2b2f37',
+	faint: '#333333',
 	blue: '#5b9cf5',
 	red: '#f0656b',
 	green: '#5fd08a',

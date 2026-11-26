@@ -1,4 +1,8 @@
 /**
+ * Mass on a spring
+ *
+ * x(t) = A·cos(√(k/m)·t). Drag the slider to change the spring constant k.
+ *
  * Animation + interaction combined: a mass on a spring oscillates over time,
  * the slider changes the spring constant, and the plot traces x(t).
  */
@@ -12,8 +16,6 @@ const DURATION = 12;
 const GRAPH_ORIGIN = [-6.5, -2.4] as const;
 
 export default defineScene({
-	title: 'Mass on a spring',
-	description: 'x(t) = A·cos(√(k/m)·t). Drag the slider to change the spring constant k.',
 	state: { k: 4 },
 	duration: DURATION,
 	loop: true,

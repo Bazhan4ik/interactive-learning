@@ -1,5 +1,5 @@
 <!--
-	/dev — engine test bench. Pick a scene from src/lessons/, see its source
+	/dev — engine test bench. Pick any *.scene.ts file, see its source
 	next to the live render, inspect state/checks, and export SVG/PNG.
 -->
 <script lang="ts">
@@ -52,7 +52,7 @@
 	{:then loaded}
 		<main>
 			<section class="code" aria-label="Scene source">
-				<div class="file">src/lessons/{loaded.id}.ts</div>
+				<div class="file">{loaded.file.slice(1)}</div>
 				<pre><code
 						>{#each loaded.source.split('\n') as lineText, i (i)}<span class="line"
 								><span class="ln">{i + 1}</span>{lineText}</span
@@ -62,11 +62,6 @@
 
 			<section class="stage">
 				{#if loaded.scene}
-					<div class="meta">
-						<h1>{loaded.scene.title}</h1>
-						{#if loaded.scene.description}<p>{loaded.scene.description}</p>{/if}
-					</div>
-
 					{#key loaded.scene}
 						<SceneView scene={loaded.scene}>
 							{#snippet children(snap)}
@@ -107,17 +102,14 @@
 </div>
 
 <style>
-	:global(html, body) {
-		margin: 0;
-		background: #0b0c0f;
-		color: #c9c7c2;
-		font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-	}
-
 	.dev {
 		display: flex;
 		flex-direction: column;
 		height: 100dvh;
+		background: #0b0c0f;
+		color: #c9c7c2;
+		font-size: 13px;
+		line-height: 1.5;
 	}
 
 	header {
@@ -200,18 +192,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 14px;
-	}
-
-	.meta h1 {
-		margin: 0;
-		font-size: 15px;
-		font-weight: 600;
-		color: #e6e4df;
-	}
-
-	.meta p {
-		margin: 2px 0 0;
-		color: #8b909a;
 	}
 
 	.inspector {

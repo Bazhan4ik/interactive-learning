@@ -33,7 +33,7 @@ describe('library', () => {
 				});
 
 				it(`${exportName}: example renders`, () => {
-					const scene = defineScene({ title: exportName, draw: () => renderExample(obj) });
+					const scene = defineScene({ draw: () => renderExample(obj) });
 					const frame = evaluateScene(scene);
 					expect(frame.primitives.length).toBeGreaterThan(0);
 					expect(renderSvg(frame)).not.toMatch(/NaN|undefined/);

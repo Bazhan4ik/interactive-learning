@@ -1,14 +1,67 @@
-# Writing scenes
+# Writing lessons
 
-A scene is one interactive diagram. Each file in this folder default-exports
-one scene. This guide is written for whoever writes scenes, human or LLM.
+This guide is for whoever writes lessons, human or LLM.
+
+## Lesson structure
+
+A lesson is one topic, split into sections shown one at a time. Each section
+has explanation text and, optionally, a scene (an interactive diagram) shown
+next to it. A lesson is a folder:
+
+```
+src/lessons/intro-to-vectors/
+  lesson.ts                 ← the manifest: title + ordered sections
+  1-what-is-a-vector.md     ← section text (markdown)
+  2-addition.md
+  2-addition.scene.ts       ← section scene (optional)
+  3-scaling.md
+  3-scaling.scene.ts
+```
 
 ```ts
+// lesson.ts
+import { defineLesson } from '#lesson';
+import definition from './1-what-is-a-vector.md?raw';
+import addition from './2-addition.md?raw';
+import additionScene from './2-addition.scene';
+
+export default defineLesson({
+	title: 'Introduction to vectors',
+	sections: [
+		{ title: 'Vector definition and notation', text: definition }, // text only
+		{ title: 'Vector addition and subtraction', text: addition, scene: additionScene }
+	]
+});
+```
+
+Rules:
+
+- The folder name is the lesson id (`/?lesson=intro-to-vectors`).
+- Number files by section (`2-addition.md`, `2-addition.scene.ts`). Every
+  `.md` and `.scene.ts` in the folder must be used by a section (tests check).
+- **All learner-facing prose lives in the markdown.** Scenes have no title or
+  description and should not contain explanatory sentences — only labels and
+  live values (`a + b = (4, 3)`).
+- The text should refer to what the scene shows ("drag the tip of **a**"),
+  using the same names and colours.
+- Markdown: paragraphs, `**bold**`, `*italic*`, `### headings`, lists, `code`,
+  links. Raw HTML is shown as text. Write maths in plain Unicode for now:
+  `|v| = √(x² + y²)`, `aₓbₓ + aᵧbᵧ`, `θ`.
+
+# Writing scenes
+
+A scene is one interactive diagram: a `*.scene.ts` file that default-exports
+`defineScene({...})`. Describe it in a header comment (that's for developers
+and the `/dev` page; learners never see it).
+
+```ts
+/**
+ * Vector addition: drag the tips of a and b; a + b follows.
+ */
 import { colors, defineScene, handle, vec, type Vec2 } from '#engine';
 import { axes, vector } from '#library';
 
 export default defineScene({
-	title: 'Vector addition',
 	view: { x: [-6, 6], y: [-3.5, 3.5] }, // world region to show (math coords, +y up)
 	state: { a: [3, 1] as Vec2, b: [1, 2] as Vec2 }, // what the learner can change
 	draw: ({ state }) => [
@@ -21,6 +74,9 @@ export default defineScene({
 	]
 });
 ```
+
+More complete examples: `src/examples/*.scene.ts` and the scenes of existing
+lessons.
 
 ## The model
 
@@ -73,7 +129,8 @@ and use `ctx.t` directly.
 
 ## Quizzes
 
-`checks` are named predicates over state; the app reads them to grade answers:
+`checks` are named predicates over state, for grading answers. (`/dev` shows
+them; the lesson page doesn't use them yet.)
 
 ```ts
 checks: { inThirdQuadrant: (s) => vec.quadrant(s.answer) === 3 }
@@ -98,7 +155,9 @@ Every factory takes one options object with geometry and style together:
 `color` is the main colour (stroke of shapes, fill of text) and cascades into
 groups. `strokeWidth`, `fontSize` and `dash` are in px.
 
-## Checking a scene
+## Checking your work
 
-`npm test` renders every scene here at several times and checks handles and
-state (`lessons.test.ts`). Open `/dev?scene=<folder>/<file>` to see it live.
+`npm test` renders every scene at several times, checks handles and state
+(`src/scenes.test.ts`), and checks each lesson's structure
+(`src/lessons/lessons.test.ts`). Open `/?lesson=<id>` to see the lesson, or
+`/dev?scene=lessons/<id>/<file>` to see a scene next to its source.

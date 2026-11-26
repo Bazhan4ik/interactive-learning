@@ -1,4 +1,8 @@
 /**
+ * Animation basics
+ *
+ * create → morph → morph → label, driven by a named timeline.
+ *
  * Timeline-driven animation: create, morph, fade and grow, all as pure
  * functions of the phase progress `ctx.p(...)`.
  */
@@ -9,8 +13,6 @@ const shapeSquare = rect({ width: 3, height: 3, color: colors.green, fill: 'curr
 const shapeTriangle = regularPolygon({ radius: 1.9, sides: 3, color: colors.orange, fill: 'currentColor', fillOpacity: 0.2 });
 
 export default defineScene({
-	title: 'Animation basics',
-	description: 'create → morph → morph → label, driven by a named timeline.',
 	timeline: {
 		draw: 1.5,
 		toSquare: { duration: 1.2, delay: 0.4 },

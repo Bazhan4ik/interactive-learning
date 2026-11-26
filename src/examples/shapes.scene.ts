@@ -1,14 +1,14 @@
 /**
+ * Core shapes
+ *
+ * Every basic node factory with a few style variations.
+ *
  * Static showcase of the core drawing vocabulary: shapes, styles, text, tips.
  */
 import { arc, arrow, circle, colors, curve, defineScene, dot, line, polygon, rect, regularPolygon, text } from '#engine';
 
 export default defineScene({
-	title: 'Core shapes',
-	description: 'Every basic node factory with a few style variations.',
 	draw: () => [
-		text({ text: 'Core shapes', at: [0, 3.8], fontSize: 26, fontWeight: 600 }),
-
 		circle({ center: [-6, 1.5], radius: 1, color: colors.blue }),
 		circle({ center: [-6, -1.5], radius: 1, color: colors.blue, fill: 'currentColor', fillOpacity: 0.25 }),
 		text({ text: 'circle', at: [-6, -3.2], color: colors.muted, fontSize: 15 }),

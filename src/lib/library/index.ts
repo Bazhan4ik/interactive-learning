@@ -9,6 +9,7 @@
 export { axes } from './math/axes';
 export { functionGraph } from './math/function-graph';
 export { grid } from './math/grid';
+export { infiniteLine } from './math/infinite-line';
 export { vector } from './math/vector';
 
 // physics

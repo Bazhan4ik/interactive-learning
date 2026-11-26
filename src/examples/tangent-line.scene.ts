@@ -1,4 +1,8 @@
 /**
+ * Tangent line
+ *
+ * Drag the point along the curve; the tangent line shows the derivative there.
+ *
  * A handle constrained to a curve: drag the point along y = f(x) and the
  * tangent line and slope readout follow. Shows `constrain` + `map`.
  */
@@ -8,8 +12,6 @@ import { axes, functionGraph, slider } from '#library';
 const X_RANGE = [-6, 6] as const;
 
 export default defineScene({
-	title: 'Tangent line',
-	description: 'Drag the point along the curve; the tangent line shows the derivative there.',
 	view: { x: [-7, 7], y: [-4, 4] },
 	state: { x0: 1, b: 1 },
 	draw: ({ state }) => {

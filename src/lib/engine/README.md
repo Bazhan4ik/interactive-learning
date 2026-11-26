@@ -69,4 +69,7 @@ so px values look the same everywhere.
 - Everything except `render/svelte` and `render/canvas.ts` is DOM-free and
   runs in Node (tests run there).
 - Errors should say *where* and *how to fix*: scene errors are `SceneError`s
-  tagged with the scene title and phase (`define`/`draw`/`compile`/`checks`).
+  tagged with the phase (`define`/`draw`/`compile`/`checks`); the loader
+  knows which file they came from.
+- Scenes carry no title or description: all learner-facing text belongs to
+  the lesson (`src/lib/lesson/`).

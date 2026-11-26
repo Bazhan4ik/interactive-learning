@@ -39,9 +39,11 @@ export interface DrawContext<S extends SceneState> {
 	px(n: number): number;
 }
 
+/**
+ * A scene has no title or description: scene files document themselves in a
+ * header comment, and all learner-facing text lives in the lesson.
+ */
 export interface SceneDefinition<S extends SceneState = SceneState> {
-	title: string;
-	description?: string;
 	/** Logical size in px; the output scales to any size. Default `[800, 450]`. */
 	size?: readonly [number, number];
 	/** World region to show. Default `{ x: [-8, 8], y: [-4.5, 4.5] }`. */
@@ -65,8 +67,6 @@ export interface SceneDefinition<S extends SceneState = SceneState> {
 
 export interface Scene<S extends SceneState = SceneState> {
 	readonly definition: SceneDefinition<S>;
-	readonly title: string;
-	readonly description: string;
 	readonly size: readonly [number, number];
 	readonly viewport: Viewport;
 	readonly theme: Theme;
@@ -77,6 +77,13 @@ export interface Scene<S extends SceneState = SceneState> {
 	readonly loop: boolean;
 	readonly autoplay: boolean;
 }
+
+/**
+ * A scene of any state shape. `Scene<{ a: Vec2 }>` is not assignable to
+ * `Scene<SceneState>` (its `checks` accept only its own state), so code that
+ * just holds or displays scenes — views, lessons — uses this.
+ */
+export type AnyScene = Scene<any>;
 
 /** Everything a renderer needs to draw one moment of a scene. */
 export interface Frame {
@@ -92,15 +99,17 @@ export interface Frame {
 
 export type ScenePhase = 'define' | 'draw' | 'compile' | 'checks';
 
-/** Errors raised while evaluating a scene, annotated with where they happened. */
+/**
+ * Errors raised while defining or evaluating a scene, annotated with the phase
+ * they happened in. (Which file the scene came from is known to the loader.)
+ */
 export class SceneError extends Error {
 	constructor(
-		readonly scene: string,
 		readonly phase: ScenePhase,
 		cause: unknown
 	) {
 		const msg = cause instanceof Error ? cause.message : String(cause);
-		super(`[${scene}] ${phase} failed: ${msg}`, { cause });
+		super(`${phase} failed: ${msg}`, { cause });
 		this.name = 'SceneError';
 	}
 }
@@ -110,9 +119,8 @@ const DEFAULT_VIEW: ViewSpec = { x: [-8, 8], y: [-4.5, 4.5] };
 
 /** Validate and normalise a scene definition. Use as `export default defineScene({...})`. */
 export function defineScene<S extends SceneState = SceneState>(def: SceneDefinition<S>): Scene<S> {
-	const title = typeof def?.title === 'string' && def.title ? def.title : '(untitled scene)';
 	try {
-		if (typeof def.draw !== 'function') throw new Error('`draw` must be a function returning nodes');
+		if (typeof def?.draw !== 'function') throw new Error('`draw` must be a function returning nodes');
 		const size = def.size ?? DEFAULT_SIZE;
 		if (!(size[0] > 0 && size[1] > 0)) throw new Error(`\`size\` must be positive, got [${size}]`);
 		const timeline = createTimeline(def.timeline);
@@ -120,8 +128,6 @@ export function defineScene<S extends SceneState = SceneState>(def: SceneDefinit
 		const theme = { ...defaultTheme, ...def.theme };
 		return {
 			definition: def,
-			title,
-			description: def.description ?? '',
 			size,
 			viewport: createViewport(size[0], size[1], def.view ?? DEFAULT_VIEW),
 			theme,
@@ -133,7 +139,7 @@ export function defineScene<S extends SceneState = SceneState>(def: SceneDefinit
 			autoplay: def.autoplay ?? duration > 0
 		};
 	} catch (e) {
-		throw new SceneError(title, 'define', e);
+		throw new SceneError('define', e);
 	}
 }
 
@@ -162,7 +168,7 @@ export function evaluateScene<S extends SceneState>(scene: Scene<S>, opts: Evalu
 		try {
 			return fn();
 		} catch (e) {
-			throw e instanceof SceneError ? e : new SceneError(scene.title, phase, e);
+			throw e instanceof SceneError ? e : new SceneError(phase, e);
 		}
 	};
 

@@ -1,0 +1,15 @@
+/* Base styles shared by every page. Page-specific styles live in their components. */
+html,
+body {
+	margin: 0;
+	background: #191919;
+	color: #e6e4df;
+	font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}

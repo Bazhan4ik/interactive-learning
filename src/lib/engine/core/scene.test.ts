@@ -7,7 +7,6 @@ import { defineScene, evaluateScene, SceneError } from './scene';
 
 describe('scenes', () => {
 	const scene = defineScene({
-		title: 'test',
 		state: { p: [1, 0] as Vec2 },
 		timeline: { grow: 2 },
 		checks: { right: (s) => s.p[0] > 0 },
@@ -34,9 +33,8 @@ describe('scenes', () => {
 		expect(evaluateScene(scene, { state: { p: [-1, 0] } }).checks).toEqual({ right: false });
 	});
 
-	it('wraps errors with the scene title and phase', () => {
+	it('wraps errors with the phase they happened in', () => {
 		const broken = defineScene({
-			title: 'broken',
 			draw: (ctx) => [create(circle(), ctx.p('missing'))]
 		});
 		try {
@@ -45,12 +43,12 @@ describe('scenes', () => {
 		} catch (e) {
 			expect(e).toBeInstanceOf(SceneError);
 			expect((e as SceneError).phase).toBe('draw');
-			expect((e as Error).message).toMatch(/\[broken\] draw failed: timeline: unknown phase "missing"/);
+			expect((e as Error).message).toMatch(/^draw failed: timeline: unknown phase "missing"/);
 		}
 	});
 
 	it('validates definitions', () => {
-		expect(() => defineScene({ title: 'x', draw: 1 as never })).toThrow(/define failed: `draw` must be a function/);
-		expect(() => defineScene({ title: 'x', view: { x: [1, 0], y: [0, 1] }, draw: () => null })).toThrow(/increasing/);
+		expect(() => defineScene({ draw: 1 as never })).toThrow(/define failed: `draw` must be a function/);
+		expect(() => defineScene({ view: { x: [1, 0], y: [0, 1] }, draw: () => null })).toThrow(/increasing/);
 	});
 });

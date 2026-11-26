@@ -1,4 +1,8 @@
 /**
+ * Vector addition
+ *
+ * Drag the tips of a and b. a + b is the diagonal of the parallelogram they span.
+ *
  * Interactive: drag the tips of a and b; the sum and parallelogram follow.
  */
 import { colors, constraints, defineScene, handle, line, round, text, vec, type Vec2 } from '#engine';
@@ -7,8 +11,6 @@ import { axes, vector } from '#library';
 const fmt = (v: Vec2) => `(${round(v[0], 1)}, ${round(v[1], 1)})`;
 
 export default defineScene({
-	title: 'Vector addition',
-	description: 'Drag the tips of a and b. a + b is the diagonal of the parallelogram they span.',
 	view: { x: [-6, 6], y: [-3.5, 3.5] },
 	state: { a: [3, 1] as Vec2, b: [1, 2] as Vec2 },
 	draw: ({ state }) => {
