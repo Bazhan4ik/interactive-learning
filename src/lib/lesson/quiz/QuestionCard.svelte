@@ -188,7 +188,7 @@
 		align-items: center;
 		gap: 12px;
 		padding: 10px 14px;
-		border: 1px solid #333;
+		border: 1px solid #383838;
 		border-radius: 8px;
 		cursor: pointer;
 		transition:
@@ -197,7 +197,7 @@
 	}
 
 	.option:hover {
-		border-color: #4a4a4a;
+		border-color: #4d4d4d;
 	}
 
 	.option:has(input:focus-visible) {
@@ -207,7 +207,7 @@
 
 	.option.selected {
 		border-color: #8b909a;
-		background: #202020;
+		background: #262626;
 	}
 
 	.option.correct {
@@ -267,9 +267,9 @@
 	.number input {
 		width: 12rem;
 		padding: 8px 12px;
-		border: 1px solid #333;
+		border: 1px solid #383838;
 		border-radius: 8px;
-		background: #202020;
+		background: #262626;
 		color: #f2f0eb;
 		font: inherit;
 		font-size: 16px;
@@ -355,8 +355,8 @@
 
 	.explanation {
 		padding: 14px 16px;
-		border-left: 2px solid #3a3a3a;
-		background: #1e1e1e;
+		border-left: 2px solid #444;
+		background: #262626;
 		border-radius: 0 8px 8px 0;
 		font-size: 15.5px;
 	}

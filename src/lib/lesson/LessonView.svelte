@@ -3,6 +3,9 @@
 	right. The diagram is the current question's scene if it has one, otherwise
 	the section's scene.
 
+	The page scrolls as a whole: the text column flows, the diagram column is
+	sticky so the diagram stays on screen while the text moves.
+
 	Navigation between sections is plain links (`hrefFor`), so the URL is the
 	source of truth. Mount one LessonView per section ({#key}) so per-section
 	state (current question, diagram state) starts fresh.
@@ -48,23 +51,21 @@
 
 <div class="lesson">
 	<article class="text">
-		<div class="scroll">
-			<header>
-				<p class="count">Section {number} of {lesson.sections.length}</p>
-				<h1>{section.title}</h1>
-			</header>
+		<header>
+			<p class="count">Section {number} of {lesson.sections.length}</p>
+			<h1>{section.title}</h1>
+		</header>
 
-			{#if section.text}
-				<div class="prose body">
-					<!-- renderMarkdown escapes raw HTML and unsafe links (see markdown.ts) -->
-					{@html renderMarkdown(section.text)}
-				</div>
-			{/if}
+		{#if section.text}
+			<div class="prose body">
+				<!-- renderMarkdown escapes raw HTML and unsafe links (see markdown.ts) -->
+				{@html renderMarkdown(section.text)}
+			</div>
+		{/if}
 
-			{#if section.quiz.length > 0}
-				<Quiz {lessonId} questions={section.quiz} bind:index={questionIndex} sceneState={liveState} />
-			{/if}
-		</div>
+		{#if section.quiz.length > 0}
+			<Quiz {lessonId} questions={section.quiz} bind:index={questionIndex} sceneState={liveState} />
+		{/if}
 
 		<nav class="pager" aria-label="Section navigation">
 			{#if prev}
@@ -94,7 +95,8 @@
 	<section class="stage" aria-label="Diagram">
 		{#if shownScene}
 			{#key shownScene}
-				<div class="scene">
+				<!-- --aspect lets CSS fit the diagram to the column's width *and* height -->
+				<div class="scene" style:--aspect={shownScene.size[0] / shownScene.size[1]}>
 					<SceneView scene={shownScene} label={section.title} onstatechange={(state) => (live = { scene: shownScene!, state })} />
 				</div>
 			{/key}
@@ -106,26 +108,17 @@
 	.lesson {
 		display: grid;
 		grid-template-columns: minmax(360px, 38%) minmax(0, 1fr);
-		height: 100%;
-		min-height: 0;
+		align-items: start;
 	}
 
-	/* ---- text column ---- */
+	/* ---- text column (flows with the page) ---- */
 
 	.text {
-		display: flex;
-		flex-direction: column;
-		min-height: 0;
-		border-right: 1px solid #262626;
+		min-width: 0;
+		padding: 40px 44px 48px;
 	}
 
-	.scroll {
-		flex: 1;
-		overflow-y: auto;
-		padding: 40px 44px 40px;
-	}
-
-	.scroll > :global(*) {
+	.text > :global(*) {
 		max-width: 40rem;
 	}
 
@@ -149,14 +142,13 @@
 		color: #f2f0eb;
 	}
 
-	/* ---- pager ---- */
+	/* ---- pager (end of the text) ---- */
 
 	.pager {
 		display: flex;
 		justify-content: space-between;
 		gap: 16px;
-		padding: 16px 44px 20px;
-		border-top: 1px solid #262626;
+		margin-top: 48px;
 	}
 
 	.pager a,
@@ -201,49 +193,49 @@
 		max-width: 100%;
 	}
 
-	/* ---- diagram ---- */
+	/* ---- diagram column (sticky: always on screen) ---- */
 
 	.stage {
+		position: sticky;
+		top: var(--header-height);
+		height: calc(100dvh - var(--header-height));
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 0;
-		overflow: auto;
 		padding: 32px 40px;
+		container-type: size;
 	}
 
+	/* As wide as possible while the diagram plus its controls (~56px) fit the height. */
 	.scene {
-		width: 100%;
-		max-width: 1100px;
+		width: min(100%, 1100px, calc((100cqh - 56px) * var(--aspect)));
 	}
 
 	@media (max-width: 900px) {
 		.lesson {
 			grid-template-columns: 1fr;
-			height: auto;
 		}
 
+		/* Diagram on top, pinned under the header while the text scrolls beneath it. */
 		.stage {
 			order: -1;
-			padding: 16px;
-			border-bottom: 1px solid #262626;
+			z-index: 5;
+			height: auto;
+			padding: 12px 16px;
+			container-type: normal;
+			background: #191919;
 		}
 
 		.stage:empty {
 			display: none;
 		}
 
+		.scene {
+			width: min(100%, calc(45dvh * var(--aspect)));
+		}
+
 		.text {
-			border-right: none;
-		}
-
-		.scroll {
-			overflow: visible;
-			padding: 28px 20px 24px;
-		}
-
-		.pager {
-			padding: 16px 20px 24px;
+			padding: 24px 20px 32px;
 		}
 	}
 </style>

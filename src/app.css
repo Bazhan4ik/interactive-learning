@@ -1,4 +1,9 @@
 /* Base styles shared by every page. Page-specific styles live in their components. */
+:root {
+	/* the sticky lesson header; the sticky diagram sits right below it */
+	--header-height: 54px;
+}
+
 html,
 body {
 	margin: 0;

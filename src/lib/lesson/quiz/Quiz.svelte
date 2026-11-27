@@ -44,13 +44,19 @@
 </section>
 
 <style>
+	/* A card that sits slightly above the page, like a small popup. */
 	.quiz {
 		display: flex;
 		flex-direction: column;
 		gap: 18px;
-		margin-top: 36px;
-		padding-top: 24px;
-		border-top: 1px solid #2a2a2a;
+		margin-top: 40px;
+		padding: 20px 24px 16px;
+		border: 1px solid #343434;
+		border-radius: 14px;
+		background: #1f1f1f;
+		box-shadow:
+			0 1px 0 rgb(255 255 255 / 0.04) inset,
+			0 16px 40px -12px rgb(0 0 0 / 0.6);
 	}
 
 	header {

@@ -67,19 +67,22 @@
 
 <style>
 	.app {
-		display: flex;
-		flex-direction: column;
-		height: 100dvh;
+		min-height: 100dvh;
 	}
 
+	/* The page scrolls as a whole; the header stays on top. */
 	header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
 		gap: 20px;
-		min-height: 54px;
-		padding: 10px 24px;
+		height: var(--header-height);
+		padding: 0 24px;
 		border-bottom: 1px solid #262626;
+		background: #191919;
 	}
 
 	select {
@@ -90,11 +93,6 @@
 		padding: 5px 10px;
 		font: inherit;
 		font-size: 14px;
-	}
-
-	main {
-		flex: 1;
-		min-height: 0;
 	}
 
 	.message {
@@ -118,12 +116,5 @@
 		background: #221819;
 		white-space: pre-wrap;
 		font-size: 13px;
-	}
-
-	@media (max-width: 900px) {
-		.app {
-			height: auto;
-			min-height: 100dvh;
-		}
 	}
 </style>

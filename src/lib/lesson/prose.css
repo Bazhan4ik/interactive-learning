@@ -61,6 +61,24 @@
 	color: #8fb8f7;
 }
 
+.prose table {
+	margin: 0 0 1.2em;
+	border-collapse: collapse;
+	font-size: 15px;
+}
+
+.prose th,
+.prose td {
+	padding: 6px 16px 6px 0;
+	border-bottom: 1px solid #2e2e2e;
+}
+
+.prose th {
+	font-weight: 600;
+	color: #f2f0eb;
+	border-bottom-color: #444;
+}
+
 /* math */
 
 .prose .katex {
