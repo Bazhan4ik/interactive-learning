@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { loadScene, sceneIds } from './scenes';
 
 describe('dev scene registry', () => {
-	it('finds scenes in examples and lessons', () => {
+	it('finds example scenes and example lesson scenes', () => {
 		expect(sceneIds).toContain('examples/shapes');
-		expect(sceneIds.some((id) => id.startsWith('lessons/'))).toBe(true);
+		expect(sceneIds.some((id) => id.startsWith('examples/lessons/'))).toBe(true);
 	});
 
 	it('loads a scene with its source', async () => {

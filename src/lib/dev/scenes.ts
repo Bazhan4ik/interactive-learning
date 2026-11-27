@@ -1,6 +1,6 @@
 /**
  * Discovers every scene file (`*.scene.ts`) for the /dev page: engine examples
- * in `src/examples/` and lesson scenes in `src/lessons/`.
+ * and example lessons in `src/examples/`, generated lessons in `src/lessons/`.
  *
  * Modules are loaded lazily and individually, so one broken scene file
  * (syntax error, bad `defineScene` call) only breaks itself, not the page.

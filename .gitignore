@@ -22,3 +22,7 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Generated lessons stay local; example lessons live in src/examples/lessons/
+/src/lessons/*
+!/src/lessons/README.md

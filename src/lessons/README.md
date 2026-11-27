@@ -8,8 +8,13 @@ A lesson is one topic, split into sections shown one at a time. Each section
 has explanation text, optionally a scene (an interactive diagram) shown next
 to it, and optionally a quiz shown after the text. A lesson is a folder:
 
+- **generated lessons**: `src/lessons/<id>/`. Git-ignored: they stay on the
+  machine that generated them, only this guide is in the repository.
+- **example lessons**: `src/examples/lessons/<name>/`, committed, the reference
+  for authors. Their id is `examples/<name>`.
+
 ```
-src/lessons/intro-to-vectors/
+src/examples/lessons/intro-to-vectors/
   lesson.ts                      ← the manifest: title + ordered sections + quizzes
   1-what-is-a-vector.md          ← section text (markdown + LaTeX)
   2-addition.md
@@ -36,7 +41,8 @@ export default defineLesson({
 
 Rules:
 
-- The folder name is the lesson id (`/?lesson=intro-to-vectors`).
+- The folder name is the lesson id (`/?lesson=<id>`); an example lesson's id
+  has the `examples/` prefix (`/?lesson=examples/intro-to-vectors`).
 - Number files by section (`2-addition.md`, `2-addition.scene.ts`). Every
   `.md` and `.scene.ts` in the folder must be used by a section or question
   (tests check).
@@ -141,8 +147,8 @@ export default defineScene({
 });
 ```
 
-More complete examples: `src/examples/*.scene.ts` and the scenes of existing
-lessons.
+More complete examples: `src/examples/*.scene.ts` and the scenes of the
+example lessons in `src/examples/lessons/`.
 
 ## The model
 
@@ -229,5 +235,5 @@ groups. `strokeWidth`, `fontSize` and `dash` are in px.
 
 `npm test` renders every scene at several times, checks handles and state
 (`src/scenes.test.ts`), and checks each lesson's structure
-(`src/lessons/lessons.test.ts`). Open `/?lesson=<id>` to see the lesson, or
+(`src/lessons.test.ts`). Open `/?lesson=<id>` to see the lesson, or
 `/dev?scene=lessons/<id>/<file>` to see a scene next to its source.

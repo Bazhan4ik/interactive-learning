@@ -1,5 +1,5 @@
 /**
- * Lesson authoring API (`#lesson`), imported by `src/lessons/<id>/lesson.ts`.
+ * Lesson authoring API (`#lesson`), imported by each lesson's `lesson.ts`.
  * App-side helpers (registry, markdown, results, views) are imported from their files.
  */
 export { defineLesson, isLesson, lessonQuestions } from './lesson';

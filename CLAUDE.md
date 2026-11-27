@@ -16,15 +16,16 @@ Requires Node ≥ 22.17 (`nvm use`, see `.nvmrc`).
 
 ## Layout
 
-| path                 | what                                                              | changes          |
-| -------------------- | ----------------------------------------------------------------- | ---------------- |
-| `src/lib/engine/`    | core engine: geometry, nodes, animation, compile, renderers       | rarely; stable   |
-| `src/lib/library/`   | reusable objects (`spring`, `axes`, `vector`, ...)                | often; additive  |
-| `src/lib/lesson/`    | lesson model, markdown + KaTeX, quiz (`quiz/`), `LessonView`      |                  |
-| `src/lessons/<id>/`  | lessons: `lesson.ts` + `N-name.md` + `N-name.scene.ts`            | generated        |
-| `src/examples/`      | engine showcase scenes (`*.scene.ts`), reference for authors      |                  |
-| `src/lib/dev/`       | helpers for the `/dev` page                                       |                  |
-| `src/routes/`        | `/` lesson player, `/dev` test bench                              |                  |
+| path                    | what                                                             | changes                |
+| ----------------------- | ---------------------------------------------------------------- | ---------------------- |
+| `src/lib/engine/`       | core engine: geometry, nodes, animation, compile, renderers      | rarely; stable         |
+| `src/lib/library/`      | reusable objects (`spring`, `axes`, `vector`, ...)               | often; additive        |
+| `src/lib/lesson/`       | lesson model, markdown + KaTeX, quiz (`quiz/`), `LessonView`     |                        |
+| `src/lessons/<id>/`     | generated lessons: `lesson.ts` + `N-name.md` + `N-name.scene.ts` | generated; git-ignored |
+| `src/examples/`         | engine showcase scenes (`*.scene.ts`), reference for authors     |                        |
+| `src/examples/lessons/` | example lessons (id `examples/<name>`), reference for authors    | committed              |
+| `src/lib/dev/`          | helpers for the `/dev` page                                      |                        |
+| `src/routes/`           | `/` lesson player, `/dev` test bench                             |                        |
 
 Read `src/lib/engine/README.md`, `src/lib/library/README.md` and
 `src/lessons/README.md` before working in those areas.

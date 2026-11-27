@@ -1,16 +1,27 @@
 /**
- * Checks every lesson folder in src/lessons/. Scenes themselves are smoke
- * tested in src/scenes.test.ts; this checks the lesson structure around them.
+ * Checks every lesson folder: generated lessons in src/lessons/ and example
+ * lessons in src/examples/lessons/. Scenes themselves are smoke tested in
+ * src/scenes.test.ts; this checks the lesson structure around them.
  * A generated lesson must pass these before it is shown to a learner.
  */
 import { describe, expect, it } from 'vitest';
 import { isLesson, lessonQuestions } from '#lesson';
 import { findMathErrors, renderMarkdown } from '#lib/lesson/markdown.ts';
 
-const manifests = import.meta.glob<{ default: unknown }>('./*/lesson.ts', { eager: true });
-const texts = import.meta.glob<string>('./*/*.md', { eager: true, query: '?raw', import: 'default' });
-const scenes = import.meta.glob<{ default: unknown }>('./*/*.scene.ts', { eager: true });
-const folderOf = (file: string) => file.split('/')[1];
+// import.meta.glob only accepts inline literals, so the patterns are repeated.
+const manifests = import.meta.glob<{ default: unknown }>(['./lessons/*/lesson.ts', './examples/lessons/*/lesson.ts'], {
+	eager: true
+});
+const texts = import.meta.glob<string>(['./lessons/*/*.md', './examples/lessons/*/*.md'], {
+	eager: true,
+	query: '?raw',
+	import: 'default'
+});
+const scenes = import.meta.glob<{ default: unknown }>(['./lessons/*/*.scene.ts', './examples/lessons/*/*.scene.ts'], {
+	eager: true
+});
+/** `./lessons/<id>/lesson.ts` → `lessons/<id>` */
+const folderOf = (file: string) => file.slice(2, file.lastIndexOf('/'));
 
 describe('lessons', () => {
 	it('found lessons', () => {

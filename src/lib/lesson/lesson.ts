@@ -3,8 +3,8 @@
  * text (markdown + LaTeX), an optional scene shown next to it, and an optional
  * quiz shown after the text. A section can also be quiz-only.
  *
- * A lesson is a folder in `src/lessons/` whose `lesson.ts` default-exports
- * `defineLesson({...})`. See `src/lessons/README.md`.
+ * A lesson is a folder in `src/lessons/` (generated) or `src/examples/lessons/`
+ * whose `lesson.ts` default-exports `defineLesson({...})`. See `src/lessons/README.md`.
  */
 import type { AnyScene } from '#engine';
 import { defineQuestion, type Question, type QuestionDefinition } from './quiz/questions';
